@@ -4,10 +4,31 @@
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts"
+  },
   "scripts": {
-    "build": "echo \"(placeholder) db build\"",
-    "lint": "echo \"(placeholder) db lint\"",
-    "typecheck": "echo \"(placeholder) db typecheck\"",
+    "build": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/migrate.ts",
+    "db:studio": "drizzle-kit studio",
     "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.4",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@rag/tsconfig": "workspace:*",
+    "@rag/eslint-config": "workspace:*",
+    "@types/node": "^22.9.0",
+    "@types/pg": "^8.11.10",
+    "drizzle-kit": "^0.28.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }

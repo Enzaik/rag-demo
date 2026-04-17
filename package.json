@@ -14,8 +14,9 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "db:generate": "turbo run db:generate",
-    "db:migrate": "turbo run db:migrate",
-    "db:seed": "turbo run db:seed",
+    "db:migrate": "turbo run db:migrate --filter=@rag/db",
+    "db:seed": "turbo run db:seed --filter=@rag/db",
+    "db:studio": "turbo run db:studio --filter=@rag/db",
     "ingest": "turbo run ingest",
     "clean": "turbo run clean && rm -rf node_modules"
   },
