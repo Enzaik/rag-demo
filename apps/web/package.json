@@ -1,0 +1,12 @@
+{
+  "name": "@rag/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo \"(placeholder) web build\"",
+    "dev": "echo \"(placeholder) web dev — replace later\" && tail -f /dev/null",
+    "lint": "echo \"(placeholder) web lint\"",
+    "typecheck": "echo \"(placeholder) web typecheck\"",
+    "clean": "rm -rf .next dist .turbo node_modules/.cache"
+  }
+}

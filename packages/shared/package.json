@@ -1,0 +1,13 @@
+{
+  "name": "@rag/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo \"(placeholder) shared build\"",
+    "lint": "echo \"(placeholder) shared lint\"",
+    "typecheck": "echo \"(placeholder) shared typecheck\"",
+    "clean": "rm -rf dist .turbo"
+  }
+}

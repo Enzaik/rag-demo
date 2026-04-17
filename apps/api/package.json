@@ -1,0 +1,12 @@
+{
+  "name": "@rag/api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo \"(placeholder) api build\"",
+    "dev": "echo \"(placeholder) api dev — replace later\" && tail -f /dev/null",
+    "lint": "echo \"(placeholder) api lint\"",
+    "typecheck": "echo \"(placeholder) api typecheck\"",
+    "clean": "rm -rf dist .turbo"
+  }
+}
