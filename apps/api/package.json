@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "nest build",
-    "predev": "pnpm --filter @rag/db run build",
+    "predev": "pnpm --filter @rag/db --filter @rag/shared run build",
     "dev": "nest start --watch",
     "start": "node dist/main.js",
     "lint": "eslint .",

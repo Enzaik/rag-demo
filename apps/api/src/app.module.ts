@@ -4,9 +4,10 @@ import { AuthModule } from "./auth/auth.module";
 import { DbModule } from "./db/db.module";
 import { IngestionModule } from "./ingestion/ingestion.module";
 import { AdminModule } from "./admin/admin.module";
+import { RetrievalModule } from "./retrieval/retrieval.module";
 
 @Module({
-  imports: [DbModule, AuthModule, IngestionModule, AdminModule],
+  imports: [DbModule, AuthModule, IngestionModule, AdminModule, RetrievalModule],
   controllers: [HealthController],
 })
 export class AppModule {}
