@@ -10,13 +10,10 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
-// ---------------------------------------------------------------------------
-// App tables
-//
-// The `user` / `session` / `account` / `verification` tables are owned by
-// better-auth and generated via its CLI — added in a later migration.
-// `conversations.userId` will gain an FK to `user.id` at that point.
-// ---------------------------------------------------------------------------
+// better-auth-generated tables (user, session, account, verification).
+// Produced by `pnpm dlx @better-auth/cli generate` — re-exported so drizzle-kit
+// picks them up alongside our app tables.
+export * from "./auth-schema";
 
 export const documentSource = pgEnum("document_source", ["markdown", "product"]);
 export const messageRole = pgEnum("message_role", ["user", "assistant", "system"]);
