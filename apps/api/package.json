@@ -11,6 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "seed:products": "tsx src/seed/products.seed.ts",
     "ingest:products": "tsx src/seed/ingest-products.ts",
+    "ingest:markdown": "tsx src/seed/ingest-markdown.ts",
+    "ingest": "pnpm ingest:products && pnpm ingest:markdown",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
