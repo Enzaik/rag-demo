@@ -7,6 +7,7 @@ import { z } from "zod";
 export const retrieveRequestSchema = z.object({
   query: z.string().min(1).max(4000),
   topK: z.number().int().min(1).max(20).optional(),
+  apiKey: z.string().min(1).optional(),
 });
 export type RetrieveRequest = z.infer<typeof retrieveRequestSchema>;
 

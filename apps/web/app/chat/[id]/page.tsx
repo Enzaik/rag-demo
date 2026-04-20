@@ -1,9 +1,10 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { listMessagesServer } from "@/lib/api-server";
 import { makeQueryClient } from "@/lib/query-client";
 import { conversationKeys } from "@/lib/query-keys";
+import { getSession } from "@/lib/session";
 
 import { ChatShell } from "./chat-shell";
 
@@ -13,6 +14,9 @@ export default async function ChatConversationPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  const session = await getSession();
+  if (!session) redirect("/login");
 
   const queryClient = makeQueryClient();
   try {
@@ -26,7 +30,7 @@ export default async function ChatConversationPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ChatShell conversationId={id} />
+      <ChatShell conversationId={id} userId={session.user.id} />
     </HydrationBoundary>
   );
 }

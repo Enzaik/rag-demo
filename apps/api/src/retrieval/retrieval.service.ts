@@ -14,8 +14,9 @@ export class RetrievalService {
     db: Database,
     query: string,
     topK: number = DEFAULT_TOP_K,
+    apiKey?: string,
   ): Promise<RetrievedChunk[]> {
-    const vector = await this.embeddings.embedOne(query);
+    const vector = await this.embeddings.embedOne(query, apiKey);
     const literal = `[${vector.join(",")}]`;
 
     const rows = await db.execute<{

@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type Message as AiMessage } from "ai";
 import { NextResponse } from "next/server";
 
@@ -11,6 +11,7 @@ export const runtime = "nodejs";
 type ChatBody = {
   conversationId: string;
   messages: AiMessage[];
+  apiKey?: string;
 };
 
 export async function POST(req: Request) {
@@ -19,10 +20,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { conversationId, messages } = (await req.json()) as ChatBody;
+  const { conversationId, messages, apiKey } = (await req.json()) as ChatBody;
   if (!conversationId || !Array.isArray(messages) || messages.length === 0) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
+
+  const resolvedKey = apiKey?.trim() || process.env.OPENAI_API_KEY;
+  if (!resolvedKey) {
+    return NextResponse.json(
+      { error: "No OpenAI API key. Set one in Settings or configure OPENAI_API_KEY on the server." },
+      { status: 400 },
+    );
+  }
+  const openai = createOpenAI({ apiKey: resolvedKey });
 
   const last = messages[messages.length - 1];
   if (!last || last.role !== "user" || !last.content.trim()) {
@@ -32,7 +42,11 @@ export async function POST(req: Request) {
 
   await sendMessageServer(conversationId, { role: "user", content: userText });
 
-  const { chunks } = await retrieveServer({ query: userText, topK: 6 });
+  const { chunks } = await retrieveServer({
+    query: userText,
+    topK: 6,
+    apiKey: apiKey?.trim() || undefined,
+  });
 
   console.log(
     `[chat] retrieved ${chunks.length} chunks for "${userText}":`,

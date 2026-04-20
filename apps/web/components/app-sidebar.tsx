@@ -2,23 +2,44 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Plus, Trash02 } from "@untitledui/icons";
+import { useState } from "react";
+import { LogOut01, Plus, Settings01, Trash02 } from "@untitledui/icons";
 
 import { ButtonUtility } from "@/components/ui/button-utility";
 import { cn } from "@/lib/utils";
-import { useConversations, useCreateConversation, useDeleteConversation } from "@/hooks/use-conversations";
+import {
+  useConversations,
+  useCreateConversation,
+  useDeleteConversation,
+} from "@/hooks/use-conversations";
+import { signOut } from "@/lib/auth-client";
+import { Button } from "./ui/button";
 
-export function ChatSidebar() {
+export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: conversations, isLoading } = useConversations();
   const create = useCreateConversation();
   const remove = useDeleteConversation();
+  const [signingOut, setSigningOut] = useState(false);
 
   async function onNew() {
     const conv = await create.mutateAsync(undefined);
     router.push(`/chat/${conv.id}`);
   }
+
+  async function onSignOut() {
+    setSigningOut(true);
+    try {
+      await signOut();
+      router.replace("/login");
+      router.refresh();
+    } finally {
+      setSigningOut(false);
+    }
+  }
+
+  const settingsActive = pathname === "/settings";
 
   return (
     <aside className="flex w-72 shrink-0 flex-col gap-3 border-r border-secondary bg-primary p-4">
@@ -35,7 +56,7 @@ export function ChatSidebar() {
         />
       </div>
 
-      <nav className="flex flex-col gap-0.5">
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
         {isLoading && <p className="px-2 text-sm text-tertiary">Loading…</p>}
         {!isLoading && conversations && conversations.length === 0 && (
           <p className="px-2 text-sm text-tertiary">No conversations yet.</p>
@@ -76,6 +97,30 @@ export function ChatSidebar() {
           );
         })}
       </nav>
+
+      <div className="flex flex-col gap-0.5 border-t border-secondary pt-3">
+        <Link
+          href="/settings"
+          className={cn(
+            "flex items-center gap-2 rounded-md px-2 py-2 text-sm font-semibold transition",
+            settingsActive
+              ? "bg-primary_hover text-secondary"
+              : "text-quaternary hover:text-secondary",
+          )}
+        >
+          <Settings01 className="size-4 shrink-0" />
+          Settings
+        </Link>
+        <Button
+          variant="ghost"
+          onClick={onSignOut}
+          disabled={signingOut}
+          className="flex items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-semibold text-quaternary transition hover:text-secondary disabled:opacity-60"
+        >
+          <LogOut01 className="size-4 shrink-0" />
+          {signingOut ? "Signing out…" : "Sign out"}
+        </Button>
+      </div>
     </aside>
   );
 }

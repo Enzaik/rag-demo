@@ -1,14 +1,13 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 
-import { makeQueryClient } from "@/lib/query-client";
+import { AppSidebar } from "@/components/app-sidebar";
 import { listConversationsServer } from "@/lib/api-server";
+import { makeQueryClient } from "@/lib/query-client";
 import { conversationKeys } from "@/lib/query-keys";
 import { getSession } from "@/lib/session";
 
-import { AppSidebar } from "@/components/app-sidebar";
-
-export default async function ChatLayout({ children }: { children: React.ReactNode }) {
+export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (!session) redirect("/login");
 
@@ -22,7 +21,7 @@ export default async function ChatLayout({ children }: { children: React.ReactNo
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex h-screen">
         <AppSidebar />
-        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">{children}</main>
       </div>
     </HydrationBoundary>
   );

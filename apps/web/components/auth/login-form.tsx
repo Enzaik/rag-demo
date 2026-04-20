@@ -7,7 +7,6 @@ import { Mail01, Lock01 } from "@untitledui/icons";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "@/lib/auth-client";
 
@@ -43,10 +42,13 @@ export function LoginForm() {
       </div>
 
       {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Sign-in failed</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        <div
+          role="alert"
+          className="rounded-lg bg-error-primary/10 p-3 text-sm ring-1 ring-error_subtle ring-inset"
+        >
+          <p className="font-semibold text-error-primary">Sign-in failed</p>
+          <p className="text-error-primary">{error}</p>
+        </div>
       )}
 
       <form onSubmit={onSubmit} className="flex flex-col gap-4">

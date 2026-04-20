@@ -22,3 +22,7 @@ export function signUp(input: { email: string; password: string; name: string })
 export function signIn(input: { email: string; password: string }) {
   return post("/api/auth/sign-in/email", input);
 }
+
+export function signOut() {
+  return post("/api/auth/sign-out", {});
+}

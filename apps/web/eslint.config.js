@@ -14,7 +14,15 @@ const EXCLUDED_REGISTRY_COMPONENTS = [
 export default [
   ...config,
   {
-    ignores: [".next/**", "node_modules/**", "dist/**"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "dist/**",
+      // Vendored by the shadcn CLI from the registry — do not hand-edit or lint.
+      "components/ui/**",
+      "lib/utils.ts",
+      "lib/utils/**",
+    ],
   },
   {
     rules: {

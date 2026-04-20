@@ -2,6 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
+import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUp, Stop } from "@untitledui/icons";
@@ -9,6 +10,7 @@ import { ArrowUp, Stop } from "@untitledui/icons";
 import { Button } from "@/components/ui/button";
 import { ButtonUtility } from "@/components/ui/button-utility";
 import { Input } from "@/components/ui/input";
+import { useApiKey } from "@/hooks/use-api-key";
 import { useMessages } from "@/hooks/use-messages";
 import { conversationTitleFromUserMessage } from "@/lib/conversation-title";
 import { listMessages } from "@/lib/api";
@@ -20,9 +22,16 @@ import { ChatBubble } from "./chat-bubble";
 
 type SeedMsg = Pick<UIMessage, "id" | "role" | "content">;
 
-export function ChatShell({ conversationId }: { conversationId: string }) {
+export function ChatShell({
+  conversationId,
+  userId,
+}: {
+  conversationId: string;
+  userId: string;
+}) {
   const queryClient = useQueryClient();
   const { data: stored } = useMessages(conversationId);
+  const { key: apiKey, hydrated: apiKeyHydrated, read: readApiKey } = useApiKey(userId);
 
   // useChat feeds SWR `fallbackData` from `initialMessages`. If this changes when
   // React Query refetches (e.g. after the first reply), the thread can reset to
@@ -55,8 +64,14 @@ export function ChatShell({ conversationId }: { conversationId: string }) {
     useChat({
       api: "/api/chat",
       id: conversationId,
-      body: { conversationId },
       initialMessages,
+      // Inject the per-user API key at submit time so a key change takes effect
+      // without reloading the chat.
+      experimental_prepareRequestBody: ({ messages: msgs }) => ({
+        conversationId,
+        messages: msgs,
+        apiKey: readApiKey() ?? undefined,
+      }),
       onFinish: async () => {
         // Do not use fetchQuery here: global staleTime (30s) keeps the prefetched
         // `[]` "fresh", so fetchQuery returns cached empty messages and setMessages
@@ -131,6 +146,16 @@ export function ChatShell({ conversationId }: { conversationId: string }) {
         onSubmit={handleSubmit}
         className="border-t border-secondary bg-primary p-4"
       >
+        {apiKeyHydrated && !apiKey && (
+          <p className="mx-auto mb-2 max-w-3xl text-xs text-tertiary">
+            No OpenAI key set for your account —{" "}
+            <Link href="/settings" className="font-medium text-brand-secondary hover:underline">
+              add one in Settings
+            </Link>{" "}
+            to use your own key. Until then, the server&apos;s default key is used if
+            configured.
+          </p>
+        )}
         {error && (
           <p className="mx-auto mb-2 max-w-3xl text-sm text-error-primary">
             {error.message}

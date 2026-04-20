@@ -18,8 +18,8 @@ export class RetrievalController {
     if (!parsed.success) {
       throw new BadRequestException(parsed.error.flatten());
     }
-    const { query, topK } = parsed.data;
-    const chunks = await this.retrieval.retrieve(this.handle.db, query, topK);
+    const { query, topK, apiKey } = parsed.data;
+    const chunks = await this.retrieval.retrieve(this.handle.db, query, topK, apiKey);
     return { chunks };
   }
 }

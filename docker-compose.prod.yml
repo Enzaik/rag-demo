@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: rag-demo_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rag-demo
+      POSTGRES_PASSWORD: rag-demo_secret
+      POSTGRES_DB: rag-demo
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - default
+      - dokploy-network
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U rag-demo -d rag-demo'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  dokploy-network:
+    external: true
+volumes:
+  postgres_data:
