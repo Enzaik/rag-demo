@@ -37,4 +37,4 @@ WORKDIR /app/apps/api
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "cd /app/packages/database && npx drizzle-kit migrate && cd /app/apps/api && node dist/main"]
+CMD ["sh", "-c", "cd /app/packages/db && npx drizzle-kit migrate && cd /app/apps/api && node dist/main"]
