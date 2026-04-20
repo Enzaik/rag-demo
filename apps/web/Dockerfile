@@ -11,6 +11,8 @@ COPY apps/web ./apps/web
 
 RUN pnpm install --frozen-lockfile --prod=false
 
+# Workspace packages expose dist/*.d.ts; Next's compiler needs them (devDependency graphs skip turbo ^build here).
+RUN pnpm --filter @rag/shared build
 RUN pnpm --filter @rag/db build
 RUN pnpm --filter @rag/web build
 

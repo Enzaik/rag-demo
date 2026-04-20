@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { conversationTitleFromUserMessage } from "@/lib/conversation-title";
 import { getSession } from "@/lib/session";
 import { patchConversationServer, retrieveServer, sendMessageServer } from "@/lib/api-server";
+import type { RetrievedChunk } from "@rag/shared";
 
 export const runtime = "nodejs";
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
 
   await sendMessageServer(conversationId, { role: "user", content: userText });
 
-  const { chunks } = await retrieveServer({
+  const { chunks }: { chunks: RetrievedChunk[] } = await retrieveServer({
     query: userText,
     topK: 6,
     apiKey: apiKey?.trim() || undefined,
