@@ -20,9 +20,9 @@ export default async function ChatLayout({ children }: { children: React.ReactNo
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
         <ChatSidebar />
-        <main className="flex-1">{children}</main>
+        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
       </div>
     </HydrationBoundary>
   );

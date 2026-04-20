@@ -10,5 +10,6 @@ export function useMessages(conversationId: string) {
     queryKey: conversationKeys.messages(conversationId),
     queryFn: async () => (await listMessages(conversationId)).messages,
     enabled: !!conversationId,
+    placeholderData: (previousData) => previousData,
   });
 }

@@ -4,6 +4,7 @@ import type {
   ListConversationsResponse,
   ListMessagesResponse,
   Message,
+  PatchConversationRequest,
   SendMessageRequest,
 } from "@rag/shared";
 
@@ -36,6 +37,16 @@ export function createConversation(body: CreateConversationRequest): Promise<Con
   });
 }
 
+export function patchConversation(
+  id: string,
+  body: PatchConversationRequest,
+): Promise<Conversation> {
+  return request<Conversation>(`/conversations/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
 export function listMessages(id: string): Promise<ListMessagesResponse> {
   return request<ListMessagesResponse>(`/conversations/${id}/messages`);
 }
@@ -45,4 +56,15 @@ export function sendMessage(id: string, body: SendMessageRequest): Promise<Messa
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+export async function deleteConversation(id: string): Promise<void> {
+  const res = await fetch(`${API_URL}/conversations/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const msg = await res.text().catch(() => "");
+    throw new Error(msg || `Request failed (${res.status})`);
+  }
 }

@@ -65,6 +65,37 @@ export class ConversationsService {
     return toMessage(row);
   }
 
+  async deleteConversation(db: Database, userId: string, conversationId: string): Promise<void> {
+    await this.assertOwnership(db, userId, conversationId);
+    await db.delete(conversations).where(eq(conversations.id, conversationId));
+  }
+
+  async patchConversation(
+    db: Database,
+    userId: string,
+    conversationId: string,
+    input: { title: string; onlyIfEmpty?: boolean },
+  ): Promise<Conversation> {
+    await this.assertOwnership(db, userId, conversationId);
+    if (input.onlyIfEmpty) {
+      const [existing] = await db
+        .select()
+        .from(conversations)
+        .where(eq(conversations.id, conversationId));
+      if (!existing) throw new NotFoundException("conversation not found");
+      if (existing.title?.trim()) {
+        return toConversation(existing);
+      }
+    }
+    const [updated] = await db
+      .update(conversations)
+      .set({ title: input.title, updatedAt: new Date() })
+      .where(eq(conversations.id, conversationId))
+      .returning();
+    if (!updated) throw new NotFoundException("conversation not found");
+    return toConversation(updated);
+  }
+
   private async assertOwnership(db: Database, userId: string, conversationId: string) {
     const [row] = await db
       .select({ userId: conversations.userId })

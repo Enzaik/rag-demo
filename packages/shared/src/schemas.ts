@@ -36,6 +36,10 @@ export type MessageRole = z.infer<typeof messageRoleSchema>;
 export const citationSchema = z.object({
   chunkId: z.string().uuid(),
   score: z.number(),
+  documentTitle: z.string().optional(),
+  source: z.enum(["markdown", "product"]).optional(),
+  sourceRef: z.string().optional(),
+  content: z.string().optional(),
 });
 export type Citation = z.infer<typeof citationSchema>;
 
@@ -61,6 +65,13 @@ export const createConversationRequestSchema = z.object({
   title: z.string().max(200).optional(),
 });
 export type CreateConversationRequest = z.infer<typeof createConversationRequestSchema>;
+
+/** Rename thread; use `onlyIfEmpty: true` to set an auto-title once from the first exchange. */
+export const patchConversationRequestSchema = z.object({
+  title: z.string().min(1).max(200),
+  onlyIfEmpty: z.boolean().optional(),
+});
+export type PatchConversationRequest = z.infer<typeof patchConversationRequestSchema>;
 
 export const sendMessageRequestSchema = z.object({
   role: messageRoleSchema,

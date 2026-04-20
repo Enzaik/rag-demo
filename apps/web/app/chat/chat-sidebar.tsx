@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Plus } from "@untitledui/icons";
+import { Plus, Trash02 } from "@untitledui/icons";
 
 import { ButtonUtility } from "@/components/ui/button-utility";
 import { cn } from "@/lib/utils";
-import { useConversations, useCreateConversation } from "@/hooks/use-conversations";
+import { useConversations, useCreateConversation, useDeleteConversation } from "@/hooks/use-conversations";
 
 export function ChatSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: conversations, isLoading } = useConversations();
   const create = useCreateConversation();
+  const remove = useDeleteConversation();
 
   async function onNew() {
     const conv = await create.mutateAsync(undefined);
@@ -42,16 +43,36 @@ export function ChatSidebar() {
         {conversations?.map((c) => {
           const active = pathname === `/chat/${c.id}`;
           return (
-            <Link
+            <div
               key={c.id}
-              href={`/chat/${c.id}`}
               className={cn(
-                "truncate rounded-md px-2 py-2 text-md font-semibold transition md:text-sm text-quaternary hover:text-secondary",
-                active && "bg-primary_hover group-hover:text-secondary_hover md:text-sm text-md text-secondary transition-inherit-all z-1",
+                "group flex items-center gap-1 rounded-md py-1 pl-1 pr-0.5",
+                active && "bg-primary_hover",
               )}
             >
-              {c.title || "Untitled"}
-            </Link>
+              <Link
+                href={`/chat/${c.id}`}
+                className={cn(
+                  "min-w-0 flex-1 truncate px-1 py-1.5 text-md font-semibold transition md:text-sm text-quaternary hover:text-secondary",
+                  active && "text-secondary md:text-sm text-md",
+                )}
+              >
+                {c.title?.trim() ? c.title : "New chat"}
+              </Link>
+              <ButtonUtility
+                icon={Trash02}
+                size="xs"
+                color="tertiary"
+                tooltip="Delete conversation"
+                isDisabled={remove.isPending}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  void remove.mutateAsync(c.id);
+                }}
+                className="shrink-0 opacity-50 transition-opacity hover:opacity-100 group-hover:opacity-80"
+              />
+            </div>
           );
         })}
       </nav>

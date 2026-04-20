@@ -2,16 +2,21 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Req,
   UseGuards,
 } from "@nestjs/common";
 import {
   createConversationRequestSchema,
+  patchConversationRequestSchema,
   sendMessageRequestSchema,
   type Conversation,
   type ListConversationsResponse,
@@ -44,6 +49,26 @@ export class ConversationsController {
     const parsed = createConversationRequestSchema.safeParse(body ?? {});
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.conversations.create(this.handle.db, req.user.id, parsed.data.title);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteConversation(
+    @Req() req: AuthenticatedRequest,
+    @Param("id", new ParseUUIDPipe()) id: string,
+  ): Promise<void> {
+    await this.conversations.deleteConversation(this.handle.db, req.user.id, id);
+  }
+
+  @Patch(":id")
+  async patchConversation(
+    @Req() req: AuthenticatedRequest,
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @Body() body: unknown,
+  ): Promise<Conversation> {
+    const parsed = patchConversationRequestSchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.conversations.patchConversation(this.handle.db, req.user.id, id, parsed.data);
   }
 
   @Get(":id/messages")
