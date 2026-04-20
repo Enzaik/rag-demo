@@ -19,10 +19,13 @@ if (!secret) {
 
 const { db } = createDb({ connectionString });
 
+const webOrigin = process.env.WEB_ORIGIN!;
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
   secret,
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3001",
+  trustedOrigins: [webOrigin],
   emailAndPassword: {
     enabled: true,
   },
