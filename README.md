@@ -47,6 +47,30 @@ pnpm dev              # api on :3001, web on :3000
 
 Open `http://localhost:3000`, register, and start a chat.
 
+## Try it out
+
+The seeded corpus is **Alpine Forge**, a fictional outdoor gear company. A few questions that exercise different parts of the retrieval graph:
+
+**Products (catalog rows):**
+- *what products do you have?*
+- *tell me about the Summit Shell Jacket*
+- *what's the warmest sleeping bag you sell?*
+- *do you make anything with RDS-certified down?*
+
+**Policies & support (markdown corpus):**
+- *how do I create an account?*
+- *what's your return policy?*
+- *do you ship internationally?*
+- *what payment methods do you accept?*
+- *how do I start a warranty claim?*
+
+**Deeper knowledge (spans multiple docs):**
+- *how should I layer for a cold, wet trip?*
+- *how do I wash a waterproof shell?*
+- *I'm between sizes on a jacket — what should I do?*
+
+Answers cite the retrieved passages inline as `[1]`, `[2]`, etc. Click a citation to reveal the source snippet.
+
 ## Project layout
 
 ```
@@ -74,6 +98,28 @@ packages/
 | `pnpm typecheck` | repo-wide `tsc --noEmit` |
 | `pnpm lint` | repo-wide ESLint |
 | `pnpm shadcn:web -- add <component>` | install a shadcn component into the web app |
+
+## Seeding / ingesting in production
+
+When the Postgres instance isn't reachable from your laptop (e.g. Dokploy on a private docker network), run the seeds inside the deployed API container. The runtime image ships the compiled `dist/seed/*.js` bundles and the `/content` corpus, so no source or `pnpm` is needed.
+
+```bash
+# on the host
+API=$(sudo docker ps --format '{{.Names}}' | grep rag-demo-backend)
+
+# one-time: populate the products table
+sudo docker exec -it $API sh -c 'cd /app/apps/api && node dist/seed/products.seed.js'
+
+# chunk + embed products
+sudo docker exec -it $API sh -c 'cd /app/apps/api && node dist/seed/ingest-products.js'
+
+# chunk + embed the markdown corpus in /content
+sudo docker exec -it $API sh -c 'cd /app/apps/api && node dist/seed/ingest-markdown.js'
+```
+
+`DATABASE_URL` and `OPENAI_API_KEY` are inherited from the container env, so no extra flags.
+
+The API startup also applies every `/app/docker/postgres/init/*.sql` (idempotent — `CREATE EXTENSION IF NOT EXISTS vector`) before drizzle migrations, so a fresh Postgres without initdb mounts still ends up with pgvector.
 
 ## Environment variables
 
