@@ -11,9 +11,9 @@ import { auth } from "./auth/auth";
 async function bootstrap() {
   // Disable the default body parser so better-auth can read the raw request
   // stream on `/api/auth/*`. We re-enable JSON parsing for every other route.
-  const app = await NestFactory.create(AppModule, { bodyParser: false });
+  const app = await NestFactory.create(AppModule, { rawBody: true });
 
-  app.use(cookieParser());
+  // app.use(cookieParser());
 
   const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
   app.enableCors({

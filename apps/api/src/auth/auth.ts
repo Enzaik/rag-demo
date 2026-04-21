@@ -3,6 +3,9 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createDb } from "@rag/db";
 
+const isProd = process.env.NODE_ENV === "production";
+const cookieDomain = process.env.COOKIE_DOMAIN;
+
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error(
@@ -28,6 +31,16 @@ export const auth = betterAuth({
   trustedOrigins: [webOrigin],
   emailAndPassword: {
     enabled: true,
+  },
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: !!cookieDomain,
+      domain: cookieDomain,
+    },
+    defaultCookieAttributes: {
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+    },
   },
 });
 
